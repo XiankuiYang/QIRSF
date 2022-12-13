@@ -1,1 +1,1 @@
-# Shint app - IRSF clustering method
+# Shiny app - IRSF clustering method
