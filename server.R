@@ -17,13 +17,13 @@ server <- function(input, output) {
   Data1 <- reactive(
     return(
       list(
-        Regression_model = read.csv("examples\\Regression model candidate.csv",header = T),
-        Regression_saddle = read.csv("examples\\Regression model with saddle point candidate.csv",header = T),
-        Regression_irregular = read.csv("examples\\Regression model with irregular area candidate.csv",header = T),
-        Exponential_model = read.csv("examples\\Exponential function model candidate.csv",header = T),
-        Gramacy_Lee = read.csv("examples\\Gramacy and Lee function model candidate.csv",header = T),
-        TITR = read.csv("examples\\Two inputs and two response model candidate.csv",header = T),
-        TIOR = read.csv("examples\\Three inputs and one response model candidate.csv",header = T)
+        Regression_model = read.csv("Regression model candidate.csv",header = T),
+        Regression_saddle = read.csv("Regression model with saddle point candidate.csv",header = T),
+        Regression_irregular = read.csv("Regression model with irregular area candidate.csv",header = T),
+        Exponential_model = read.csv("Exponential function model candidate.csv",header = T),
+        Gramacy_Lee = read.csv("Gramacy and Lee function model candidate.csv",header = T),
+        TITR = read.csv("Two inputs and two response model candidate.csv",header = T),
+        TIOR = read.csv("Three inputs and one response model candidate.csv",header = T)
       )
     )
   )
