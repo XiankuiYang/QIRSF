@@ -21,14 +21,14 @@ To install the package from GitHub:
 
 ```r
 # Install the remotes package if not already installed
-`install.packages("remotes")`
+install.packages("remotes")
 
 # Install the QIRSF package from GitHub
-`remotes::install_github("XiankuiYang/QIRSF")`
+remotes::install_github("XiankuiYang/QIRSF")
 
 # After installation, load the package and launch the app:
-`library(QIRSF)`
-`run_app()`
+library(QIRSF)
+run_app()
 
 This will open the IRSF clustering method app in your default web browser.
 
