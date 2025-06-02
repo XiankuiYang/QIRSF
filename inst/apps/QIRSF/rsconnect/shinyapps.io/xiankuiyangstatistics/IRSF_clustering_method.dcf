@@ -1,0 +1,11 @@
+name: IRSF_clustering_method
+title: IRSF_clustering_method
+username:
+account: xiankuiyangstatistics
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 7737894
+bundleId: 10382066
+url: https://xiankuiyangstatistics.shinyapps.io/IRSF_clustering_method/
+asMultiple: FALSE
+asStatic: FALSE

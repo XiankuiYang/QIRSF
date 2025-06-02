@@ -1,0 +1,15 @@
+Package: QIRSF
+Title: Quick Input-Response Space-Filling Shiny App
+Version: 0.1.0
+Authors@R: person("Xiankui", "Yang", email = "xiankuiyang@usf.edu", role = c("aut", "cre"))
+Description: A Shiny application for QIRSF experimental design and visualization.
+Depends: R (>= 4.1.0)
+Imports:
+    shiny,
+    DT,
+    ggplot2,
+    tools
+Encoding: UTF-8
+License: MIT
+LazyData: true
+RoxygenNote: 7.3.2
