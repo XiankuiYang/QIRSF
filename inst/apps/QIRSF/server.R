@@ -493,7 +493,7 @@ server <- function(input, output) {
   Criterian1 <- eventReactive(input$work,{
     even.RSF = input$Method=="IRSF"
     req(even.RSF&even())
-    n_cores <- 8
+    n_cores <- 5
     cl <- makeCluster(n_cores)
     registerDoSNOW(cl)
     wt = seq(0,1,by = 1/input$Num_wt)
