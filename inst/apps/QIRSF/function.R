@@ -51,10 +51,10 @@ irsf.cluster <- function(xmat,ymat,N,wt,Method) {
   outmat.x <- matrix(0,nrow = Nd,ncol = nxp)
   outmat.y <- matrix(0,nrow = Nd,ncol = nyp)
   for (j in 1:Nd) {
-    cluster.x = as.matrix(randmat.x[which(groupid == j),])
-    cluster.y = as.matrix(randmat.y[which(groupid == j),])
-    cluster.x.original = as.matrix(xmat.r[which(groupid == j),])
-    cluster.y.original = as.matrix(ymat.r[which(groupid == j),])
+    cluster.x = matrix(randmat.x[which(groupid == j),],nrow=length(which(groupid == j)))
+    cluster.y = matrix(randmat.y[which(groupid == j),],nrow=length(which(groupid == j)))
+    cluster.x.original = matrix(xmat.r[which(groupid == j),],nrow=length(which(groupid == j)))
+    cluster.y.original = matrix(ymat.r[which(groupid == j),],nrow=length(which(groupid == j)))
     nd = dim(cluster.y)[1]
     np = dim(cluster.x)[2]
     nq = dim(cluster.y)[2]

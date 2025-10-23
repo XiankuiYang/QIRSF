@@ -13,7 +13,7 @@ library(shinyjs)
 library(DT)
 source("function.R")
 
-server <- function(input, output, session) {
+server <- function(input, output) {
   # download example data
   Data1 <- reactive(
     return(
@@ -44,7 +44,7 @@ server <- function(input, output, session) {
            "2 inputs & 2 resp."=Data1()$TITR,
            "3 inputs & 1 resp."=Data1()$TIOR)
   })
-
+  
   output$downloadData <- downloadHandler(
     filename = function() {
       paste(input$download, ".csv", sep = "")
@@ -53,7 +53,7 @@ server <- function(input, output, session) {
       write.csv(dataDownload(), file, row.names = FALSE)
     }
   )
-
+  
   # Transfer the uploading data in R
   data <- reactive({
     req(input$Upload_file)
@@ -63,7 +63,7 @@ server <- function(input, output, session) {
            validate("Invalid file; Please upload a .csv file")
     )
   })
-
+  
   output$head <- DT::renderDataTable({
     K = head(data(), input$n)
     dat<-DT::datatable(K,options=list(dom='ltp',paging=TRUE,pageLength=10))
@@ -72,7 +72,7 @@ server <- function(input, output, session) {
   even <- reactive({
     (input$Dim_input+input$Dim_response) ==length(data()[1,])
   })
-
+  
   Xmat <- reactive({
     req(even())
     return(as.matrix(data()[,1:(input$Dim_input)],ncol=input$Dim_input))
@@ -113,8 +113,8 @@ server <- function(input, output, session) {
         theme(axis.title = element_text(size = 15)) +
         theme(axis.text = element_text(size = 12))+
         theme(legend.position = "right") +
-        scale_linetype_manual(labels = c(expression(Y[1]),expression(Y[2])),
-                              breaks = c("Y1","Y2"),
+        scale_linetype_manual(labels = c(expression(Y[1]),expression(Y[2])), 
+                              breaks = c("Y1","Y2"), 
                               values = c("Y1"=1,"Y2"=2)) +
         theme(legend.key.size = unit(0.5,"cm"),
               legend.title = element_text(size = 12),
@@ -149,7 +149,7 @@ server <- function(input, output, session) {
         A6 = which(Xmat()[,3]==A[6])
       }
       A = round(A,3)
-
+      
       P1 <- ggplot(data = data.frame(a=Xmat()[A1,1],b=Xmat()[A1,2],c=Ymat()[A1,1]),aes(x=a,y=b))+
         geom_contour(aes(z=c),bins = 20,color = "black")+
         metR::geom_text_contour(aes(z = c)) + labs(title = bquote(x[3]~"="~.(A[1])))+
@@ -219,7 +219,7 @@ server <- function(input, output, session) {
       return(plot_grid(P1, P2, P3, P4, P5, P6, labels = NULL))
     }
   },height = 600,width = 600)
-
+  
   ## Tab showing
   observeEvent(input$Method,{
     if (input$Method=="ISF") {
@@ -274,7 +274,7 @@ server <- function(input, output, session) {
     names(Output.ISF.design) = names(data())
     DT::datatable(Output.ISF.design, options = list(pageLength = 10))
   })
-
+  
   output$download_ISF_design <- downloadHandler(
     filename = function() {
       paste0("ISF_Design_Table_", Sys.Date(), ".csv")
@@ -287,7 +287,7 @@ server <- function(input, output, session) {
       write.csv(Output.ISF.design, file, row.names = FALSE)
     }
   )
-
+  
   output$ISF_design_plot <- renderPlot({
     even1 <- (input$Dim_input <= 2)
     even2 <- (input$Dim_response <= 2)
@@ -351,7 +351,7 @@ server <- function(input, output, session) {
               panel.grid.minor = element_blank())+
         theme(plot.title = element_text(hjust = 0.5))
       P1 <- P1 + geom_point(data = Des_mat, aes(x=a1,y=b1),color="darkgreen",size = 2)
-
+      
       P2 <-ggplot(data = Cand_mat,aes(x=c,y=d))+
         geom_point(color="black",shape=1)+
         xlab(expression(Y[1]))+ylab(expression(Y[2]))+theme_bw() +
@@ -372,7 +372,7 @@ server <- function(input, output, session) {
     scatterplot3d(result.ISF()$X.design[,1:3],xlab = expression(X[1]),ylab = expression(X[2]),
                   zlab = expression(X[3]),xlim=c(0,1),ylim = c(0,1),zlim = c(0,1),color = "blue",pch = 16,cex.symbols = 0.8)
   },height = 400,width = 400)
-
+  
   ## Response results showing
   result.RSF = eventReactive(input$work,{
     even.RSF = input$Method=="RSF"
@@ -387,7 +387,7 @@ server <- function(input, output, session) {
     names(Output.RSF.design) = names(data())
     DT::datatable(Output.RSF.design, options = list(pageLength = 10))
   })
-
+  
   output$download_RSF_design <- downloadHandler(
     filename = function() {
       paste0("RSF_Design_Table_", Sys.Date(), ".csv")
@@ -463,7 +463,7 @@ server <- function(input, output, session) {
               panel.grid.minor = element_blank())+
         theme(plot.title = element_text(hjust = 0.5))
       P1 <- P1 + geom_point(data = Des_mat, aes(x=a1,y=b1),color="purple",size = 2)
-
+      
       P2 <-ggplot(data = Cand_mat,aes(x=c,y=d))+
         geom_point(color="black",shape=1)+
         xlab(expression(Y[1]))+ylab(expression(Y[2]))+theme_bw() +
@@ -484,12 +484,12 @@ server <- function(input, output, session) {
     scatterplot3d(result.RSF()$X.design[,1:3],xlab = expression(X[1]),ylab = expression(X[2]),
                   zlab = expression(X[3]),xlim=c(0,1),ylim = c(0,1),zlim = c(0,1),color = "blue",pch = 16,cex.symbols = 0.8)
   },height = 400,width = 400)
-
-
-
-
+  
+  
+  
+  
   ## IRSF Pareto Front
-
+  
   Criterian1 <- eventReactive(input$work,{
     even.RSF = input$Method=="IRSF"
     req(even.RSF&even())
@@ -501,7 +501,7 @@ server <- function(input, output, session) {
     ymat.cand.est.full<-as.matrix(Ymat(),ncol=input$Dim_response)
     Ns0.ex1 <- warning1()
     iterations <- length(wt)
-
+    
     CriterionA <- foreach(varid = 1:iterations, .combine = rbind) %dopar%
       {
         irsf.cluster <- function(xmat,ymat,N,wt,Method) {
@@ -528,7 +528,7 @@ server <- function(input, output, session) {
           nyp <- dim(ymat)[2]
           xmat.r <- xmat
           ymat.r <- ymat
-
+          
           xmat.r.1 <- unitscale(xmat.r)
           ymat.r.1 <- unitscale(ymat.r)
           randmat.x <- as.matrix(xmat.r.1[,1:(nxp)])
@@ -542,7 +542,7 @@ server <- function(input, output, session) {
           d1 = (dx-xmin)/(xmax-xmin)
           d2 = (dy-ymin)/(ymax-ymin)
           dc = wt*d1+(1-wt)*d2
-
+          
           if (Method == "complete") {
             groupid <- stats::cutree(stats::hclust(d = dc, method = "complete"), k = Nd)
           }
@@ -552,20 +552,20 @@ server <- function(input, output, session) {
           if (Method == "mcquitty"){
             groupid <- stats::cutree(stats::hclust(d = dc, method = "mcquitty"), k = Nd)
           }
-
+          
           outmat.x <- matrix(0,nrow = Nd,ncol = nxp)
           outmat.y <- matrix(0,nrow = Nd,ncol = nyp)
           for (j in 1:Nd) {
-            cluster.x = as.matrix(randmat.x[which(groupid == j),])
-            cluster.y = as.matrix(randmat.y[which(groupid == j),])
-            cluster.x.original = as.matrix(xmat.r[which(groupid == j),])
-            cluster.y.original = as.matrix(ymat.r[which(groupid == j),])
+            cluster.x = matrix(randmat.x[which(groupid == j),],nrow=length(which(groupid == j)))
+            cluster.y = matrix(randmat.y[which(groupid == j),],nrow=length(which(groupid == j)))
+            cluster.x.original = matrix(xmat.r[which(groupid == j),],nrow=length(which(groupid == j)))
+            cluster.y.original = matrix(ymat.r[which(groupid == j),],nrow=length(which(groupid == j)))
             nd = dim(cluster.y)[1]
             np = dim(cluster.x)[2]
             nq = dim(cluster.y)[2]
-
+            
             cluster1 = cbind(cluster.x,cluster.y)
-
+            
             Dist.mat = apply(cluster1, 1, function(P1){
               max(wt*((sqrt(rowSums((cluster.x-matrix(rep(P1[1:np],nd),ncol=np,byrow = T))^2))-xmin)/(xmax-xmin))+
                     (1-wt)*((sqrt(rowSums((cluster.y-matrix(rep(P1[(np+1):(np+nq)],nd),ncol=nq,byrow = T))^2))-ymin)/(ymax-ymin)))
@@ -577,10 +577,10 @@ server <- function(input, output, session) {
             outmat.x[j,] = cluster.x.original[Minimax.point,]
             outmat.y[j,] = cluster.y.original[Minimax.point,]
           }
-
+          
           result = list(X.design = outmat.x, Y.design = outmat.y, X.candidate = xmat.r, Y.candidate = ymat.r,
                         Cluster.num = groupid,weight.value = wt)
-
+          
           return(result)
         }
         Cri_IRSF_cluster <- function(Des) {
@@ -605,14 +605,14 @@ server <- function(input, output, session) {
           Xcand = as.matrix(Des[[3]])
           Ycand = as.matrix(Des[[4]])
           wt = Des[[6]]
-
+          
           xmat.scale = unitscale(xmat,Xcand)
           ymat.scale = unitscale(ymat,Ycand)
           qnx = dim(Xcand)[1]
           px = dim(xmat)[2]
           py = dim(ymat)[2]
           qx = dim(xmat)[1]
-
+          
           xcand.scale = unitscale(Xcand,Xcand)
           ycand.scale = unitscale(Ycand,Ycand)
           X.max = max(as.numeric(lapply(1:qnx, function(i,xmat,xcand){
@@ -625,7 +625,7 @@ server <- function(input, output, session) {
               stats::dist(as.matrix(rbind(p[1:(py)],ymat[j,1:(py)])))
             },ymat = ymat,p = ycand[i,])))
           },ycand= ycand.scale,ymat =ymat.scale)))
-
+          
           Xmat1 = as.data.frame(xmat[,1:(px)])
           names(Xmat1) = paste("x",c(1:(px)))
           Ymat1 = as.data.frame(ymat[,1:(py)])
@@ -633,7 +633,7 @@ server <- function(input, output, session) {
           result = list(X.max=X.max,Y.max=Y.max,X.design=Xmat1,Y.design = Ymat1,weight.value = Des[[6]])
           return(result)
         }
-
+        
         result.3 = irsf.cluster(xmat.r,ymat.cand.est.full,Ns0.ex1,wt[varid],Method = "complete")
         result.cri = Cri_IRSF_cluster(result.3)
         return(data.frame(X.max=result.cri[[1]],Y.max=result.cri[[2]],weight.x=wt[varid],Method="complete"))
@@ -665,7 +665,7 @@ server <- function(input, output, session) {
           nyp <- dim(ymat)[2]
           xmat.r <- xmat
           ymat.r <- ymat
-
+          
           xmat.r.1 <- unitscale(xmat.r)
           ymat.r.1 <- unitscale(ymat.r)
           randmat.x <- as.matrix(xmat.r.1[,1:(nxp)])
@@ -679,7 +679,7 @@ server <- function(input, output, session) {
           d1 = (dx-xmin)/(xmax-xmin)
           d2 = (dy-ymin)/(ymax-ymin)
           dc = wt*d1+(1-wt)*d2
-
+          
           if (Method == "complete") {
             groupid <- stats::cutree(stats::hclust(d = dc, method = "complete"), k = Nd)
           }
@@ -689,20 +689,20 @@ server <- function(input, output, session) {
           if (Method == "mcquitty"){
             groupid <- stats::cutree(stats::hclust(d = dc, method = "mcquitty"), k = Nd)
           }
-
+          
           outmat.x <- matrix(0,nrow = Nd,ncol = nxp)
           outmat.y <- matrix(0,nrow = Nd,ncol = nyp)
           for (j in 1:Nd) {
-            cluster.x = as.matrix(randmat.x[which(groupid == j),])
-            cluster.y = as.matrix(randmat.y[which(groupid == j),])
-            cluster.x.original = as.matrix(xmat.r[which(groupid == j),])
-            cluster.y.original = as.matrix(ymat.r[which(groupid == j),])
+            cluster.x = matrix(randmat.x[which(groupid == j),],nrow=length(which(groupid == j)))
+            cluster.y = matrix(randmat.y[which(groupid == j),],nrow=length(which(groupid == j)))
+            cluster.x.original = matrix(xmat.r[which(groupid == j),],nrow=length(which(groupid == j)))
+            cluster.y.original = matrix(ymat.r[which(groupid == j),],nrow=length(which(groupid == j)))
             nd = dim(cluster.y)[1]
             np = dim(cluster.x)[2]
             nq = dim(cluster.y)[2]
-
+            
             cluster1 = cbind(cluster.x,cluster.y)
-
+            
             Dist.mat = apply(cluster1, 1, function(P1){
               max(wt*((sqrt(rowSums((cluster.x-matrix(rep(P1[1:np],nd),ncol=np,byrow = T))^2))-xmin)/(xmax-xmin))+
                     (1-wt)*((sqrt(rowSums((cluster.y-matrix(rep(P1[(np+1):(np+nq)],nd),ncol=nq,byrow = T))^2))-ymin)/(ymax-ymin)))
@@ -714,10 +714,10 @@ server <- function(input, output, session) {
             outmat.x[j,] = cluster.x.original[Minimax.point,]
             outmat.y[j,] = cluster.y.original[Minimax.point,]
           }
-
+          
           result = list(X.design = outmat.x, Y.design = outmat.y, X.candidate = xmat.r, Y.candidate = ymat.r,
                         Cluster.num = groupid,weight.value = wt)
-
+          
           return(result)
         }
         Cri_IRSF_cluster <- function(Des) {
@@ -742,14 +742,14 @@ server <- function(input, output, session) {
           Xcand = as.matrix(Des[[3]])
           Ycand = as.matrix(Des[[4]])
           wt = Des[[6]]
-
+          
           xmat.scale = unitscale(xmat,Xcand)
           ymat.scale = unitscale(ymat,Ycand)
           qnx = dim(Xcand)[1]
           px = dim(xmat)[2]
           py = dim(ymat)[2]
           qx = dim(xmat)[1]
-
+          
           xcand.scale = unitscale(Xcand,Xcand)
           ycand.scale = unitscale(Ycand,Ycand)
           X.max = max(as.numeric(lapply(1:qnx, function(i,xmat,xcand){
@@ -762,7 +762,7 @@ server <- function(input, output, session) {
               stats::dist(as.matrix(rbind(p[1:(py)],ymat[j,1:(py)])))
             },ymat = ymat,p = ycand[i,])))
           },ycand= ycand.scale,ymat =ymat.scale)))
-
+          
           Xmat1 = as.data.frame(xmat[,1:(px)])
           names(Xmat1) = paste("x",c(1:(px)))
           Ymat1 = as.data.frame(ymat[,1:(py)])
@@ -770,7 +770,7 @@ server <- function(input, output, session) {
           result = list(X.max=X.max,Y.max=Y.max,X.design=Xmat1,Y.design = Ymat1,weight.value = Des[[6]])
           return(result)
         }
-
+        
         result.3 = irsf.cluster(xmat.r,ymat.cand.est.full,Ns0.ex1,wt[varid],Method = "average")
         result.cri = Cri_IRSF_cluster(result.3)
         return(data.frame(X.max=result.cri[[1]],Y.max=result.cri[[2]],weight.x=wt[varid],Method="average"))
@@ -802,7 +802,7 @@ server <- function(input, output, session) {
           nyp <- dim(ymat)[2]
           xmat.r <- xmat
           ymat.r <- ymat
-
+          
           xmat.r.1 <- unitscale(xmat.r)
           ymat.r.1 <- unitscale(ymat.r)
           randmat.x <- as.matrix(xmat.r.1[,1:(nxp)])
@@ -816,7 +816,7 @@ server <- function(input, output, session) {
           d1 = (dx-xmin)/(xmax-xmin)
           d2 = (dy-ymin)/(ymax-ymin)
           dc = wt*d1+(1-wt)*d2
-
+          
           if (Method == "complete") {
             groupid <- stats::cutree(stats::hclust(d = dc, method = "complete"), k = Nd)
           }
@@ -826,20 +826,20 @@ server <- function(input, output, session) {
           if (Method == "mcquitty"){
             groupid <- stats::cutree(stats::hclust(d = dc, method = "mcquitty"), k = Nd)
           }
-
+          
           outmat.x <- matrix(0,nrow = Nd,ncol = nxp)
           outmat.y <- matrix(0,nrow = Nd,ncol = nyp)
           for (j in 1:Nd) {
-            cluster.x = as.matrix(randmat.x[which(groupid == j),])
-            cluster.y = as.matrix(randmat.y[which(groupid == j),])
-            cluster.x.original = as.matrix(xmat.r[which(groupid == j),])
-            cluster.y.original = as.matrix(ymat.r[which(groupid == j),])
+            cluster.x = matrix(randmat.x[which(groupid == j),],nrow=length(which(groupid == j)))
+            cluster.y = matrix(randmat.y[which(groupid == j),],nrow=length(which(groupid == j)))
+            cluster.x.original = matrix(xmat.r[which(groupid == j),],nrow=length(which(groupid == j)))
+            cluster.y.original = matrix(ymat.r[which(groupid == j),],nrow=length(which(groupid == j)))
             nd = dim(cluster.y)[1]
             np = dim(cluster.x)[2]
             nq = dim(cluster.y)[2]
-
+            
             cluster1 = cbind(cluster.x,cluster.y)
-
+            
             Dist.mat = apply(cluster1, 1, function(P1){
               max(wt*((sqrt(rowSums((cluster.x-matrix(rep(P1[1:np],nd),ncol=np,byrow = T))^2))-xmin)/(xmax-xmin))+
                     (1-wt)*((sqrt(rowSums((cluster.y-matrix(rep(P1[(np+1):(np+nq)],nd),ncol=nq,byrow = T))^2))-ymin)/(ymax-ymin)))
@@ -851,10 +851,10 @@ server <- function(input, output, session) {
             outmat.x[j,] = cluster.x.original[Minimax.point,]
             outmat.y[j,] = cluster.y.original[Minimax.point,]
           }
-
+          
           result = list(X.design = outmat.x, Y.design = outmat.y, X.candidate = xmat.r, Y.candidate = ymat.r,
                         Cluster.num = groupid,weight.value = wt)
-
+          
           return(result)
         }
         Cri_IRSF_cluster <- function(Des) {
@@ -879,14 +879,14 @@ server <- function(input, output, session) {
           Xcand = as.matrix(Des[[3]])
           Ycand = as.matrix(Des[[4]])
           wt = Des[[6]]
-
+          
           xmat.scale = unitscale(xmat,Xcand)
           ymat.scale = unitscale(ymat,Ycand)
           qnx = dim(Xcand)[1]
           px = dim(xmat)[2]
           py = dim(ymat)[2]
           qx = dim(xmat)[1]
-
+          
           xcand.scale = unitscale(Xcand,Xcand)
           ycand.scale = unitscale(Ycand,Ycand)
           X.max = max(as.numeric(lapply(1:qnx, function(i,xmat,xcand){
@@ -899,7 +899,7 @@ server <- function(input, output, session) {
               stats::dist(as.matrix(rbind(p[1:(py)],ymat[j,1:(py)])))
             },ymat = ymat,p = ycand[i,])))
           },ycand= ycand.scale,ymat =ymat.scale)))
-
+          
           Xmat1 = as.data.frame(xmat[,1:(px)])
           names(Xmat1) = paste("x",c(1:(px)))
           Ymat1 = as.data.frame(ymat[,1:(py)])
@@ -907,7 +907,7 @@ server <- function(input, output, session) {
           result = list(X.max=X.max,Y.max=Y.max,X.design=Xmat1,Y.design = Ymat1,weight.value = Des[[6]])
           return(result)
         }
-
+        
         result.3 = irsf.cluster(xmat.r,ymat.cand.est.full,Ns0.ex1,wt[varid],Method = "mcquitty")
         result.cri = Cri_IRSF_cluster(result.3)
         return(data.frame(X.max=result.cri[[1]],Y.max=result.cri[[2]],weight.x=wt[varid],Method="mcquitty"))
@@ -916,19 +916,19 @@ server <- function(input, output, session) {
     stopCluster(cl)
     return(rbind(CriterionA,CriterionB,CriterionC))
   })
-
-
-
+  
+  
+  
   curpf <- reactive({
     Criterion2 = Criterian1()
     return(PF_max(Criterion2))
   })
-
+  
   output$IRSF_table <- DT::renderDataTable({
     K = as.data.frame(curpf())
     dat<-DT::datatable(K,options=list(dom='ltp',paging=TRUE,pageLength=10))
   })
-
+  
   output$download_IRSF_table <- downloadHandler(
     filename = function() {
       paste0("Criterion_Table_", Sys.Date(), ".csv")
@@ -937,20 +937,20 @@ server <- function(input, output, session) {
       write.csv(as.data.frame(curpf()), file, row.names = FALSE)
     }
   )
-
+  
   output$IRSFPF_plot <- renderPlot({
     plot(curpf()[,1],curpf()[,2],col="blue",pch = 16,xlab="X.cri",ylab="Y.cri",main="PF of maximum distance")
     lines(curpf()[,1],curpf()[,2],col="blue",lty = 2)
   })
-
-
+  
+  
   PF_Design<- eventReactive(input$plot_click,{
     A = nearPoints(data.frame(X.max=curpf()$X.max,Y.max=curpf()$Y.max,weight.x=curpf()$weight.x,Method = curpf()$Method),
                    input$plot_click,xvar = "X.max",yvar = "Y.max")
     design = irsf.cluster(Xmat(),Ymat(),warning1(),A$weight.x,Method = A$Method)
     return(design)
   })
-
+  
   Design_Specific <- eventReactive(input$plot_click,{
     Xdesign = PF_Design()$X.design
     Ydesign = PF_Design()$Y.design
@@ -958,7 +958,7 @@ server <- function(input, output, session) {
     names(Output.IRSF.design) = names(data())
     return(Output.IRSF.design)
   })
-
+  
   output$download_Specific_design <- downloadHandler(
     filename = function() {
       paste0("Design_Table_", Sys.Date(), ".csv")
@@ -967,13 +967,13 @@ server <- function(input, output, session) {
       write.csv(as.data.frame(Design_Specific()), file, row.names = FALSE)
     }
   )
-
+  
   output$Specific_design <- DT::renderDataTable({
     K = as.data.frame(Design_Specific())
     dat<-DT::datatable(K,options=list(dom='ltp',paging=TRUE,pageLength=10))
   })
-
-
+  
+  
   output$Specific_design_plot <- renderPlot({
     even1 <- (input$Dim_input <= 2)
     even2 <- (input$Dim_response <= 2)
@@ -1041,7 +1041,7 @@ server <- function(input, output, session) {
               panel.grid.minor = element_blank())+
         theme(plot.title = element_text(hjust = 0.5))
       P1 <- P1 + geom_point(data = Des_mat, aes(x=a1,y=b1),color="red",size = 2)
-
+      
       P2 <-ggplot(data = Cand_mat,aes(x=c,y=d))+
         geom_point(color="black",shape=1)+
         xlab(expression(Y[1]))+ylab(expression(Y[2]))+theme_bw() +
@@ -1066,8 +1066,5 @@ server <- function(input, output, session) {
   },height = 400,width = 400)
   observeEvent(input$refresh, {
     js$refresh_page();
-  })
-  session$onSessionEnded(function() {
-    stopApp()
   })
 }

@@ -4,3 +4,4 @@
 .httr-oauth
 .DS_Store
 .quarto
+-e ".Rproj.user/\n.Rhistory\n.RData\n.Ruserdata" 
